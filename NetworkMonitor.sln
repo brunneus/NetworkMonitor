@@ -1,10 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.25123.0
+VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetworkMonitor", "WetworkMonitor\NetworkMonitor.csproj", "{7411EADC-4E71-4568-8B5D-4E94B6EECDB9}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetworkMonitor.UI", "NetworkMonitor.UI\NetworkMonitor.UI.csproj", "{A7A41338-9E01-4644-8D6E-9C902169E625}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetworkMonitor.Engine", "NetworkMonitor.Engine\NetworkMonitor.Engine.csproj", "{2701D37F-C9E1-401C-8855-0DBDF9D21B67}"
@@ -15,10 +13,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{7411EADC-4E71-4568-8B5D-4E94B6EECDB9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7411EADC-4E71-4568-8B5D-4E94B6EECDB9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7411EADC-4E71-4568-8B5D-4E94B6EECDB9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7411EADC-4E71-4568-8B5D-4E94B6EECDB9}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A7A41338-9E01-4644-8D6E-9C902169E625}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A7A41338-9E01-4644-8D6E-9C902169E625}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A7A41338-9E01-4644-8D6E-9C902169E625}.Release|Any CPU.ActiveCfg = Release|Any CPU
