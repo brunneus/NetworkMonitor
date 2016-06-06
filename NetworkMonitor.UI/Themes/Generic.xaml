@@ -1,0 +1,130 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:controls="clr-namespace:NetworkMonitor.UI.Controls"
+                    xmlns:local="clr-namespace:NetworkMonitor.UI">
+
+    <Style TargetType="{x:Type controls:TCPDiagramControl}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type controls:TCPDiagramControl}">
+                    <Border>
+                        <Grid Background="White">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="5*" />
+                                <ColumnDefinition Width="5*" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+
+                            <Border>
+                                <StackPanel>
+                                    <TextBlock FontWeight="Bold" Text="Source Port" />
+                                    <TextBlock Text="{Binding SourcePort}" />
+                                </StackPanel>
+                            </Border>
+
+                            <Border Grid.Column="1">
+                                <StackPanel>
+                                    <TextBlock FontWeight="Bold" Text="Destination Port" />
+                                    <TextBlock Text="{Binding DestinationPort}" />
+                                </StackPanel>
+                            </Border>
+
+                            <Border Grid.Row="1" Grid.ColumnSpan="2">
+                                <StackPanel>
+                                    <TextBlock FontWeight="Bold" Text="Sequence Number" />
+                                    <TextBlock Text="{Binding SequenceNumber}" />
+                                </StackPanel>
+
+                            </Border>
+
+                            <Border Grid.Row="2" Grid.ColumnSpan="2">
+                                <StackPanel>
+                                    <TextBlock FontWeight="Bold" Text="Acknowledgement Number" />
+                                    <TextBlock Text="{Binding AcknowledgementNumber}" />
+                                </StackPanel>
+                            </Border>
+
+                            <Border Grid.Row="3">
+                                <Grid HorizontalAlignment="Center"
+                              VerticalAlignment="Center">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <Border>
+                                        <StackPanel>
+                                            <TextBlock FontWeight="Bold" Text="Data offset" />
+                                            <TextBlock Text="{Binding BytesCount}" />
+                                        </StackPanel>
+                                    </Border>
+
+                                    <Border Grid.Column="1">
+                                        <StackPanel >
+                                            <TextBlock FontWeight="Bold" Text="Syn" />
+                                            <TextBlock Text="{Binding Syn}" />
+                                        </StackPanel>
+                                    </Border>
+
+                                    <Border Grid.Column="2">
+                                        <StackPanel>
+                                            <TextBlock FontWeight="Bold" Text="Fin" />
+                                            <TextBlock Text="{Binding Fin}" />
+                                        </StackPanel>
+                                    </Border>
+
+                                    <Border Grid.Column="3">
+                                        <StackPanel >
+                                            <TextBlock FontWeight="Bold" Text="Rst" />
+                                            <TextBlock Text="{Binding RST}" />
+                                        </StackPanel>
+                                    </Border>
+
+                                    <Border Grid.Column="4">
+                                        <StackPanel >
+                                            <TextBlock FontWeight="Bold" Text="Ack" />
+                                            <TextBlock Text="{Binding ACK}" />
+                                        </StackPanel>
+                                    </Border>
+                                </Grid>
+
+                            </Border>
+
+                            <Border Grid.Row="3" Grid.Column="1">
+                                <StackPanel >
+                                    <TextBlock FontWeight="Bold" Text="Window size" />
+                                    <TextBlock Text="{Binding WindowSize}" />
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+                    </Border>
+
+                    <ControlTemplate.Resources>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="HorizontalAlignment" Value="Center" />
+                            <Setter Property="VerticalAlignment" Value="Center" />
+                            <Setter Property="Foreground" Value="Black" />
+                        </Style>
+                        <Style TargetType="StackPanel">
+                            <Setter Property="HorizontalAlignment" Value="Center" />
+                            <Setter Property="VerticalAlignment" Value="Center" />
+                            <Setter Property="Margin" Value="2" />
+                        </Style>
+                        <Style TargetType="Border">
+                            <Setter Property="BorderBrush" Value="Gainsboro" />
+                            <Setter Property="BorderThickness" Value="1"/>
+                        </Style>
+                    </ControlTemplate.Resources>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+</ResourceDictionary>
