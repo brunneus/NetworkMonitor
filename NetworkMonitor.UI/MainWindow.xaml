@@ -7,45 +7,63 @@
         xmlns:converters="clr-namespace:NetworkMonitor.UI.Converters"
         xmlns:controls="clr-namespace:NetworkMonitor.UI.Controls"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
+        Title="MainWindow" Height="450" Width="525">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
-        <CheckBox IsChecked="{Binding ShowOnlyTCPPackages}"
+        <StackPanel>
+            <CheckBox IsChecked="{Binding ShowOnlyTCPPackages}"
                   Content="Show only TCP packages">
-            <CheckBox.Style>
-                <Style TargetType="CheckBox">
-                    <Setter Property="IsEnabled" Value="{Binding CapturingNetworkTraffic, Converter={converters:NegateBoolConverter}}"/>
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding FiltredGeneratedPackages.Count}" Value="0">
-                            <Setter Property="IsEnabled" Value="False"/>
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </CheckBox.Style>
-        </CheckBox>
+                <CheckBox.Style>
+                    <Style TargetType="CheckBox">
+                        <Setter Property="IsEnabled" Value="{Binding CapturingNetworkTraffic, Converter={converters:NegateBoolConverter}}"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding FiltredGeneratedPackages.Count}" Value="0">
+                                <Setter Property="IsEnabled" Value="False"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </CheckBox.Style>
+            </CheckBox>
+        </StackPanel>
         <DataGrid ItemsSource="{Binding FiltredGeneratedPackages}"
                   Grid.Row="1"
+                  CanUserAddRows="False"
+                  CanUserDeleteRows="False"
+                  IsReadOnly="True"
+                  SelectionMode="Single"
+                  SelectedItem="{Binding SelectedPackage}"
                   AutoGenerateColumns="False">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="SourceAdress"
                                     Binding="{Binding SourceAdress}"/>
                 <DataGridTextColumn Header="DestinationAddress"
                                     Binding="{Binding DestinationAddress}"/>
-                <DataGridTextColumn Header="Protocol"
-                                    Binding="{Binding Protocol}"/>
                 <DataGridTextColumn Header="NextHeader"
                                     Binding="{Binding NextHeader}"/>
+                <DataGridTextColumn Header="Created time"
+                                    Binding="{Binding CreatedTime}"/>
                 <DataGridTemplateColumn Header="Diagram">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <Grid Background="Transparent">
                                 <ToggleButton Name="showDiagramButton"
                                               Width="16"
-                                              Height="16"/>
+                                              Height="16">
+                                    <ToggleButton.Style>
+                                        <Style TargetType="{x:Type ToggleButton}">
+                                            <Setter Property="Visibility" Value="Hidden"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding Protocol}" Value="TCP">
+                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </ToggleButton.Style>
+                                </ToggleButton>
                                 <Popup IsOpen="{Binding IsChecked, ElementName=showDiagramButton}"
                                        AllowsTransparency="True"
                                        Placement="Right"
@@ -56,16 +74,6 @@
                             </Grid>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
-                    <DataGridTemplateColumn.CellStyle>
-                        <Style TargetType="{x:Type DataGridCell}">
-                            <Setter Property="Visibility" Value="Hidden"/>
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding Protocol}" Value="TCP">
-                                    <Setter Property="Visibility" Value="Visible"/>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </DataGridTemplateColumn.CellStyle>
                 </DataGridTemplateColumn>
             </DataGrid.Columns>
         </DataGrid>
@@ -76,6 +84,10 @@
                     Command="{Binding BeginCaptureCommand}"/>
             <Button Content="StopCapture"
                     Command="{Binding StopCaptureCommand}"/>
+            <Button Content="Analise TCP connection"
+                    Command="{Binding ShowTCPPackageAnalysisCommand}"/>
+            <Button Content="Clear captured packages"
+                    Command="{Binding ClearCapturedPackagesCommand}"/>
         </StackPanel>
     </Grid>
 </Window>

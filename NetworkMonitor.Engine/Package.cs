@@ -45,8 +45,11 @@ namespace NetworkMonitor.Engine
             }
         }
 
+        public string CreatedTime { get; private set; }
+
         public Package(IpPacket ipPacket)
         {
+            this.CreatedTime = DateTime.Now.ToString("HH:mm:ss");
             _sourceAdress = ipPacket.SourceAddress.ToString();
             _destinationAddress = ipPacket.DestinationAddress.ToString();
             _nextHeader = ipPacket.NextHeader.ToString();

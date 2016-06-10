@@ -116,5 +116,24 @@ namespace NetworkMonitor.Engine
             _sourcePort = tcpPacket.SourcePort;
             _destinationPort = tcpPacket.DestinationPort;
         }
+
+        public bool BelongToSameConnectionOf(TCPPackage other)
+        {
+            var sourceAdressIsEqual = other.SourceAdress == SourceAdress;
+            var destinationAdressIsEqual = other.DestinationAddress == DestinationAddress;
+            var sourcePortIsEqual = other.SourcePort == SourcePort;
+            var destinationPortIsEqual = other.DestinationPort == DestinationPort;
+
+            var sourceAddressIsEqualToOtherDestinationAddress = SourceAdress == other.DestinationAddress;
+            var destinationAddressIsEqualToOtherSourceAddress = DestinationAddress == other.SourceAdress;
+            var sourcePortIsEqualToOtherDestinationPort = SourcePort == other.DestinationPort;
+            var destinationPortIsEqualToOtherSourcePort = DestinationPort == other.SourcePort;
+
+            return (sourceAdressIsEqual && sourcePortIsEqual && destinationPortIsEqual && destinationAdressIsEqual) ||
+                   (sourceAddressIsEqualToOtherDestinationAddress &&
+                    destinationAddressIsEqualToOtherSourceAddress &&
+                    sourcePortIsEqualToOtherDestinationPort &&
+                    destinationPortIsEqualToOtherSourcePort);
+        }
     }
 }

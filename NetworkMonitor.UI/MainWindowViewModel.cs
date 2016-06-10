@@ -1,4 +1,6 @@
 ﻿using NetworkMonitor.Engine;
+using NetworkMonitor.UI.ViewModels;
+using NetworkMonitor.UI.Views;
 using PacketDotNet;
 using SharpPcap;
 using System;
@@ -71,6 +73,7 @@ namespace NetworkMonitor.UI
             }
         }
 
+
         private bool _showOnlyTCPPackages;
         public bool ShowOnlyTCPPackages
         {
@@ -100,7 +103,18 @@ namespace NetworkMonitor.UI
             }
         }
 
+        public Package SelectedPackage { get; set; }
+
         public ObservableCollection<Package> FiltredGeneratedPackages { get; set; }
+
+        private RelayCommand _showTCPPackageAnalysisCommand;
+        public RelayCommand ShowTCPPackageAnalysisCommand
+        {
+            get
+            {
+                return _showTCPPackageAnalysisCommand ?? (_showTCPPackageAnalysisCommand = new RelayCommand(ShowTCPPackageAnalysis));
+            }
+        }
 
         public event PropertyChangedEventHandler PropertyChanged = delegate { };
 
@@ -138,6 +152,18 @@ namespace NetworkMonitor.UI
                 foreach (var package in _originalPackages)
                     FiltredGeneratedPackages.Add(package);
             }
+        }
+
+        private void ShowTCPPackageAnalysis()
+        {
+            var vm = new TCPConnectionAnalysisViewModel(_originalPackages.OfType<TCPPackage>(), this.SelectedPackage as TCPPackage);
+            var view = new TCPConnectionAnalysisView() { DataContext = vm };
+            view.ShowDialog();
+        }
+
+        private bool CanShowTCPPackageAnalysis()
+        {
+            return this.SelectedPackage.Protocol == IPProtocolType.TCP;
         }
     }
 }
