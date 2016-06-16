@@ -8,7 +8,8 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type controls:TCPDiagramControl}">
                     <Border>
-                        <Grid Background="White">
+                        <Grid Background="White"
+                              DataContext="{Binding RelativeSource={RelativeSource TemplatedParent}}">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="5*" />
                                 <ColumnDefinition Width="5*" />
@@ -23,21 +24,21 @@
                             <Border>
                                 <StackPanel>
                                     <TextBlock FontWeight="Bold" Text="Source Port" />
-                                    <TextBlock Text="{Binding SourcePort}" />
+                                    <TextBlock Text="{Binding TCPPackage.SourcePort}" />
                                 </StackPanel>
                             </Border>
 
                             <Border Grid.Column="1">
                                 <StackPanel>
                                     <TextBlock FontWeight="Bold" Text="Destination Port" />
-                                    <TextBlock Text="{Binding DestinationPort}" />
+                                    <TextBlock Text="{Binding TCPPackage.DestinationPort}" />
                                 </StackPanel>
                             </Border>
 
                             <Border Grid.Row="1" Grid.ColumnSpan="2">
                                 <StackPanel>
                                     <TextBlock FontWeight="Bold" Text="Sequence Number" />
-                                    <TextBlock Text="{Binding SequenceNumber}" />
+                                    <TextBlock Text="{Binding TCPPackage.SequenceNumber}" />
                                 </StackPanel>
 
                             </Border>
@@ -45,7 +46,7 @@
                             <Border Grid.Row="2" Grid.ColumnSpan="2">
                                 <StackPanel>
                                     <TextBlock FontWeight="Bold" Text="Acknowledgement Number" />
-                                    <TextBlock Text="{Binding AcknowledgementNumber}" />
+                                    <TextBlock Text="{Binding TCPPackage.AcknowledgementNumber}" />
                                 </StackPanel>
                             </Border>
 
@@ -63,35 +64,35 @@
                                     <Border>
                                         <StackPanel>
                                             <TextBlock FontWeight="Bold" Text="Data offset" />
-                                            <TextBlock Text="{Binding BytesCount}" />
+                                            <TextBlock Text="{Binding TCPPackage.BytesCount}" />
                                         </StackPanel>
                                     </Border>
 
                                     <Border Grid.Column="1">
                                         <StackPanel >
                                             <TextBlock FontWeight="Bold" Text="Syn" />
-                                            <TextBlock Text="{Binding Syn}" />
+                                            <TextBlock Text="{Binding TCPPackage.Syn}" />
                                         </StackPanel>
                                     </Border>
 
                                     <Border Grid.Column="2">
                                         <StackPanel>
                                             <TextBlock FontWeight="Bold" Text="Fin" />
-                                            <TextBlock Text="{Binding Fin}" />
+                                            <TextBlock Text="{Binding TCPPackage.Fin}" />
                                         </StackPanel>
                                     </Border>
 
                                     <Border Grid.Column="3">
                                         <StackPanel >
                                             <TextBlock FontWeight="Bold" Text="Rst" />
-                                            <TextBlock Text="{Binding RST}" />
+                                            <TextBlock Text="{Binding TCPPackage.RST}" />
                                         </StackPanel>
                                     </Border>
 
                                     <Border Grid.Column="4">
                                         <StackPanel >
                                             <TextBlock FontWeight="Bold" Text="Ack" />
-                                            <TextBlock Text="{Binding ACK}" />
+                                            <TextBlock Text="{Binding TCPPackage.ACK}" />
                                         </StackPanel>
                                     </Border>
                                 </Grid>
@@ -101,7 +102,7 @@
                             <Border Grid.Row="3" Grid.Column="1">
                                 <StackPanel >
                                     <TextBlock FontWeight="Bold" Text="Window size" />
-                                    <TextBlock Text="{Binding WindowSize}" />
+                                    <TextBlock Text="{Binding TCPPackage.WindowSize}" />
                                 </StackPanel>
                             </Border>
                         </Grid>

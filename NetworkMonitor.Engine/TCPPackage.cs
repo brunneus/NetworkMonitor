@@ -119,6 +119,9 @@ namespace NetworkMonitor.Engine
 
         public bool BelongToSameConnectionOf(TCPPackage other)
         {
+            if (other == null)
+                return false;
+
             var sourceAdressIsEqual = other.SourceAdress == SourceAdress;
             var destinationAdressIsEqual = other.DestinationAddress == DestinationAddress;
             var sourcePortIsEqual = other.SourcePort == SourcePort;

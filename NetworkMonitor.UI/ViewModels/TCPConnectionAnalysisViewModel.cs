@@ -1,14 +1,17 @@
 ﻿using NetworkMonitor.Engine;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace NetworkMonitor.UI.ViewModels
 {
-    public class TCPConnectionAnalysisViewModel
+    public class TCPConnectionAnalysisViewModel : INotifyPropertyChanged
     {
+        private string _sourceAdress;
+
         public TCPConnectionAnalysisViewModel(IEnumerable<TCPPackage> tcpPackages, TCPPackage selectedPackage)
         {
             var packages = tcpPackages.Where(p => p.BelongToSameConnectionOf(selectedPackage)).ToList();
@@ -24,50 +27,103 @@ namespace NetworkMonitor.UI.ViewModels
             var firstPackageIndex = packages.IndexOf(sincronizePackage);
             var lastPackageIndex = packages.IndexOf(finishPackage);
 
-            var connectionPackages = packages.GetRange(firstPackageIndex, (lastPackageIndex - firstPackageIndex) + 1);
+            ConnectionPackages = packages.GetRange(firstPackageIndex, (lastPackageIndex - firstPackageIndex) + 1);
 
+            TotalSenderWindowSize = ConnectionPackages.Where(p => p.SourceAdress == selectedPackage.SourceAdress).Max(a => a.WindowSize);
+            TotalRecieverWindowSize = ConnectionPackages.Where(p => p.SourceAdress == selectedPackage.DestinationAddress).Max(a => a.WindowSize);
 
-
-
-            //var packagesRecieved = tcpPackages.Where(p => p.SourceAdress == selectedPackage.DestinationAddress &&
-            //                                              p.DestinationAddress == selectedPackage.SourceAdress &&
-            //                                              p.SourcePort == selectedPackage.DestinationPort &&
-            //                                              p.DestinationPort == selectedPackage.SourcePort);
-
-            //PackagesSent = new List<TCPPackage>(packagesSent);
-            //PackagesRecieved = new List<TCPPackage>(packagesRecieved);
-
-            PackagesSent = new List<TCPPackage>(connectionPackages);
-
-            var senderWindowSize = int.MinValue;
-            var recieverWindow = int.MinValue;
-
-            int sentBytes = 0;
-            PackagesSent.ForEach(ps =>
-            {
-                sentBytes += ps.BytesCount;
-                if (ps.WindowSize > senderWindowSize)
-                    senderWindowSize = ps.WindowSize;
-            });
-
-            int recievedBytes = 0;
-            PackagesRecieved.ForEach(ps =>
-            {
-                recievedBytes += ps.BytesCount;
-                if (ps.WindowSize > recieverWindow)
-                    recieverWindow = ps.WindowSize;
-            });
-
-            int senderWindowSizeEmpty = PackagesSent.Count(ps => ps.WindowSize == 0);
-            int recieverWindowSizeEmpty = PackagesRecieved.Count(ps => ps.WindowSize == 0);
-
-            TestMessage = $"Sent bytes: { sentBytes} \nRecieved bytes: { recievedBytes} \nSender windows size empty: { senderWindowSizeEmpty } \nRecieved windows size empty: { recieverWindowSizeEmpty } \nSender Window size: { senderWindowSize} \nReciever window size: {recieverWindow}  ";
+            _sourceAdress = selectedPackage.SourceAdress;
         }
 
         public string TestMessage { get; set; }
 
-        public List<TCPPackage> PackagesSent { get; set; }
+        public List<TCPPackage> ConnectionPackages { get; set; }
+        
+        public int TotalRecieverWindowSize { get; set; }
 
-        public List<TCPPackage> PackagesRecieved { get; set; }
+        public int TotalSenderWindowSize { get; set; }
+
+        public event PropertyChangedEventHandler PropertyChanged = delegate { };
+
+        private TCPPackage _selectedPackage;
+        public TCPPackage SelectedPackage
+        {
+            get
+            {
+                return _selectedPackage;
+            }
+            set
+            {
+                _selectedPackage = value;
+                PropertyChanged(this, new PropertyChangedEventArgs("SelectedPackage"));
+                UpdateWindowSize();
+            }
+        }
+        
+        private int _currentSenderWindowSize;
+        public int CurrentSenderWindowSize
+        {
+            get
+            {
+                return _currentSenderWindowSize;
+            }
+
+            set
+            {
+                _currentSenderWindowSize = value;
+                PropertyChanged(this, new PropertyChangedEventArgs("CurrentSenderWindowSize"));
+            }
+        }
+
+        private int _currentRecieverWindowSize;
+        public int CurrentRecieverWindowSize
+        {
+            get
+            {
+                return _currentRecieverWindowSize;
+            }
+
+            set
+            {
+                _currentRecieverWindowSize = value;
+                PropertyChanged(this, new PropertyChangedEventArgs("CurrentRecieverWindowSize"));
+            }
+        }
+        
+        private ePackageFlow _selectedPackageFlow;
+        public ePackageFlow SelectedPackageFlow
+        {
+            get
+            {
+                return _selectedPackageFlow;
+            }
+
+            set
+            {
+                _selectedPackageFlow = value;
+                PropertyChanged(this, new PropertyChangedEventArgs("SelectedPackageFlow"));
+            }
+        }
+
+        private void UpdateWindowSize()
+        {
+            if (_selectedPackage.SourceAdress == _sourceAdress)
+            {
+                this.SelectedPackageFlow = ePackageFlow.SenderToReciever;
+                var index = ConnectionPackages.IndexOf(_selectedPackage);
+                CurrentSenderWindowSize = _selectedPackage.WindowSize;
+            }
+            else
+            {
+                this.SelectedPackageFlow = ePackageFlow.RecieverToSender;
+                CurrentRecieverWindowSize = _selectedPackage.WindowSize;
+            }
+        }
+    }
+
+    public enum ePackageFlow
+    {
+        SenderToReciever,
+        RecieverToSender
     }
 }
