@@ -7,175 +7,260 @@
         xmlns:local="clr-namespace:NetworkMonitor.UI.Views"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         Title="TCPConnectionAnalysisView"
-        Width="790"
+        Width="830"
         Height="700"
+        WindowStartupLocation="CenterScreen"
         mc:Ignorable="d">
-    <Grid Margin="10">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-        </Grid.RowDefinitions>
-
-        <DockPanel LastChildFill="True">
-            <TextBlock HorizontalAlignment="Center"
-                       DockPanel.Dock="Top"
-                       Text="Connection Packages:" />
-            <DataGrid AutoGenerateColumns="False"
-                      Name="packagesGrid"
-                      CanUserAddRows="False"
-                      CanUserDeleteRows="False"
-                      DockPanel.Dock="Bottom"
-                      IsReadOnly="True"
-                      ItemsSource="{Binding ConnectionPackages}"
-                      SelectedItem="{Binding SelectedPackage}"
-                      SelectionMode="Single">
-                <DataGrid.Columns>
-                    <DataGridTextColumn Binding="{Binding SourceAdress}" Header="SourceAdress" />
-                    <DataGridTextColumn Binding="{Binding DestinationAddress}" Header="DestinationAddress" />
-                    <DataGridTextColumn Binding="{Binding NextHeader}" Header="NextHeader" />
-                    <DataGridTextColumn Binding="{Binding CreatedTime}" Header="Created time" />
-                </DataGrid.Columns>
-            </DataGrid>
-        </DockPanel>
-
-        <GroupBox Grid.Row="1"
-                  FontWeight="Bold"
-                  Header="Buffer Analysis">
-            <Grid Margin="5">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="auto" />
-                        <RowDefinition Height="auto" />
-                        <RowDefinition Height="auto" />
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="2*" />
-                        <ColumnDefinition Width="5*" />
-                        <ColumnDefinition Width="2*" />
-                    </Grid.ColumnDefinitions>
-
-                    <Grid.Style>
-                        <Style TargetType="Grid">
-                            <Setter Property="Visibility" Value="Visible" />
+    <Grid>
+        <Grid Margin="10">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Grid.Style>
+                <Style TargetType="Grid">
+                    <Setter Property="Visibility" Value="Visible" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding ConnectionPackages.Count}" Value="0">
+                            <Setter Property="Visibility" Value="Hidden" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Grid.Style>
+            <Grid >
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <TextBlock HorizontalAlignment="Center"
+                           DockPanel.Dock="Top"
+                           Text="Connection Packages:" />
+                <DataGrid Name="packagesGrid"
+                          AutoGenerateColumns="False"
+                          Grid.Row="1"
+                          CanUserAddRows="False"
+                          CanUserDeleteRows="False"
+                          DockPanel.Dock="Top"
+                          IsReadOnly="True"
+                          ItemsSource="{Binding ConnectionPackages}"
+                          SelectedItem="{Binding SelectedPackage}"
+                          SelectionMode="Single">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Binding="{Binding SourceAdress}" Header="SourceAdress" />
+                        <DataGridTextColumn Binding="{Binding DestinationAddress}" Header="DestinationAddress" />
+                        <DataGridTextColumn Binding="{Binding NextHeader}" Header="NextHeader" />
+                        <DataGridTextColumn Binding="{Binding CreatedTime}" Header="Created time" />
+                    </DataGrid.Columns>
+                    <DataGrid.RowStyle>
+                        <Style TargetType="DataGridRow">
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding SelectedPackage, Mode=TwoWay}" Value="{x:Null}">
-                                    <Setter Property="Visibility" Value="Hidden" />
+                                <DataTrigger Binding="{Binding IsADuplicatedPackage}" Value="true">
+                                    <Setter Property="Background" Value="IndianRed"/>
                                 </DataTrigger>
                             </Style.Triggers>
                         </Style>
-                    </Grid.Style>
+                    </DataGrid.RowStyle>
+                </DataGrid>
+                <StackPanel Grid.Row="2" 
+                            Margin="5,5,0,5"
+                            HorizontalAlignment="Right"
+                            Orientation="Horizontal">
+                    <Rectangle Width="16" 
+                               Fill="IndianRed"
+                               Height="16"/>
+                    <TextBlock Text="Duplicated packages"
+                               Margin="3,0,0,0"/>
+                    <StackPanel.Style>
+                        <Style TargetType="StackPanel">
+                            <Setter Property="Visibility" Value="Hidden"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding HasAnyDuplicatedPackage}" Value="True">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </StackPanel.Style>
+                </StackPanel>
+            </Grid>
+            <GroupBox Grid.Row="1"
+                      FontWeight="Bold"
+                      Header="Buffer Analysis">
+                <Grid Margin="5">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="auto" />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="2*" />
+                            <ColumnDefinition Width="5*" />
+                            <ColumnDefinition Width="2*" />
+                        </Grid.ColumnDefinitions>
 
-                    <TextBlock HorizontalAlignment="Center"
-                               FontWeight="Normal"
-                               Text="Sender buffer" />
-                    <TextBlock Grid.Column="2"
-                               HorizontalAlignment="Center"
-                               FontWeight="Normal"
-                               Text="Reciever buffer" />
-                    <ProgressBar Name="senderBar"
-                                 Grid.Row="1"
-                                 Width="25"
-                                 Height="100"
-                                 Maximum="{Binding TotalSenderWindowSize}"
-                                 Orientation="Vertical"
-                                 Value="{Binding CurrentSenderWindowSize}" />
-
-                    <controls:TCPDiagramControl
-                        Grid.Row="0"
-                        VerticalAlignment="Top"
-                        Grid.RowSpan="2"
-                        Grid.Column="1"
-                        TCPPackage="{Binding ElementName=packagesGrid, Path=SelectedItem}"/>
-
-                    <Image Grid.Row="2"
-                           Grid.Column="1"
-                           Height="48"
-                           RenderTransformOrigin=".5,.5"
-                           Source="..\Icons\arrow.png" Margin="98,0,116,0">
-                        <Image.Style>
-                            <Style TargetType="Image">
+                        <Grid.Style>
+                            <Style TargetType="Grid">
+                                <Setter Property="Visibility" Value="Visible" />
                                 <Style.Triggers>
-                                    <DataTrigger Binding="{Binding SelectedPackageFlow}" Value="SenderToReciever">
-                                        <Setter Property="RenderTransform">
-                                            <Setter.Value>
-                                                <RotateTransform Angle="180" />
-                                            </Setter.Value>
-                                        </Setter>
+                                    <DataTrigger Binding="{Binding SelectedPackage, Mode=TwoWay}" Value="{x:Null}">
+                                        <Setter Property="Visibility" Value="Hidden" />
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>
-                        </Image.Style>
-                    </Image>
-                    <ProgressBar Name="recieverBar"
-                                 Grid.Row="1"
-                                 Grid.Column="2"
-                                 Width="25"
-                                 Height="100"
-                                 Maximum="{Binding TotalRecieverWindowSize}"
-                                 Orientation="Vertical"
-                                 Value="{Binding CurrentRecieverWindowSize}" />
-                    <StackPanel Grid.Row="2" 
-                                Orientation="Horizontal">
-                        <Rectangle Width="8"
-                                   Height="8"
-                                   HorizontalAlignment="Center"
-                                   VerticalAlignment="Center"
-                                   Fill="{Binding Foreground,
-                                                  ElementName=senderBar}" />
-                        <TextBlock Margin="3,0,0,0"
-                                   HorizontalAlignment="Center"
-                                   
-                                   VerticalAlignment="Center">
-                            <TextBlock.Text>
-                                <MultiBinding StringFormat="Available size={0} ({1})">
-                                    <Binding Path="CurrentSenderWindowSize" />
-                                    <Binding Path="TotalSenderWindowSize" />
-                                </MultiBinding>
-                            </TextBlock.Text>
-                        </TextBlock>
-                    </StackPanel>
-                    <StackPanel Grid.Row="2"
-                                Grid.Column="2"
-                                Orientation="Horizontal">
-                        <Rectangle Width="8"
-                                   Height="8"
-                                   HorizontalAlignment="Center"
-                                   VerticalAlignment="Center"
-                                   Fill="{Binding Foreground,
-                                                  ElementName=recieverBar}" />
-                        <TextBlock Margin="3,0,0,0"
-                                   HorizontalAlignment="Center"
-                                   VerticalAlignment="Center">
-                            <TextBlock.Text>
-                                <MultiBinding StringFormat="Available size={0} ({1})">
-                                    <Binding Path="CurrentRecieverWindowSize" />
-                                    <Binding Path="TotalRecieverWindowSize" />
-                                </MultiBinding>
-                            </TextBlock.Text>
-                        </TextBlock>
-                    </StackPanel>
-                </Grid>
-                <TextBlock HorizontalAlignment="Center"
-                           VerticalAlignment="Center"
-                           Foreground="Gray"
-                           Text="Selected a package to analyze">
-                    <TextBlock.Style>
-                        <Style TargetType="TextBlock">
-                            <Setter Property="Visibility" Value="Hidden" />
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding SelectedPackage, Mode=TwoWay}" Value="{x:Null}">
-                                    <Setter Property="Visibility" Value="Visible" />
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </TextBlock.Style>
-                </TextBlock>
-            </Grid>
-        </GroupBox>
+                        </Grid.Style>
 
-        <!--<StackPanel Grid.Row="2">
-            <TextBlock Text="{Binding TestMessage}"/>
-        </StackPanel>-->
+                        <TextBlock HorizontalAlignment="Center"
+                                   FontWeight="Normal"
+                                   Text="Sender buffer" />
+                        <TextBlock Grid.Column="2"
+                                   HorizontalAlignment="Center"
+                                   FontWeight="Normal"
+                                   Text="Reciever buffer" />
+
+                        <controls:TCPDiagramControl Grid.Row="0"
+                                                    Grid.RowSpan="2"
+                                                    Grid.Column="1"
+                                                    VerticalAlignment="Top"
+                                                    TCPPackage="{Binding ElementName=packagesGrid,
+                                                                         Path=SelectedItem}" />
+                        <ProgressBar Name="senderBar"
+                                     Grid.Row="1"
+                                     Width="25"
+                                     Height="100"
+                                     Maximum="{Binding TotalSenderWindowSize}"
+                                     Orientation="Vertical"
+                                     Value="{Binding FilledSpaceSenderBuffer}" />
+                        <ProgressBar Name="recieverBar"
+                                     Grid.Row="1"
+                                     Grid.Column="2"
+                                     Width="25"
+                                     Height="100"
+                                     Maximum="{Binding TotalRecieverWindowSize}"
+                                     Orientation="Vertical"
+                                     Value="{Binding FilledSpaceRecieverBuffer}" />
+                        <StackPanel Grid.Row="2" Orientation="Horizontal">
+                            <Rectangle Width="8"
+                                       Height="8"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"
+                                       Fill="{Binding Foreground,
+                                                      ElementName=senderBar}" />
+                            <TextBlock Margin="3,0,0,0"
+                                       HorizontalAlignment="Center"
+                                       TextWrapping="Wrap"
+                                       VerticalAlignment="Center">
+                                <TextBlock.Text>
+                                    <MultiBinding StringFormat="Filled space={0} ({1}) bytes">
+                                        <Binding Path="FilledSpaceSenderBuffer" />
+                                        <Binding Path="TotalSenderWindowSize" />
+                                    </MultiBinding>
+                                </TextBlock.Text>
+                            </TextBlock>
+                        </StackPanel>
+
+                        <Image Grid.Row="2"
+                               Grid.Column="1"
+                               Height="48"
+                               Margin="98,0,116,0"
+                               RenderTransformOrigin=".5,.5"
+                               Source="..\Icons\arrow.png">
+                            <Image.Style>
+                                <Style TargetType="Image">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding SelectedPackageFlow}" Value="SenderToReciever">
+                                            <Setter Property="RenderTransform">
+                                                <Setter.Value>
+                                                    <RotateTransform Angle="180" />
+                                                </Setter.Value>
+                                            </Setter>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Image.Style>
+                        </Image>
+                        <StackPanel Grid.Row="2"
+                                    Grid.Column="2"
+                                    Orientation="Horizontal">
+                            <Rectangle Width="8"
+                                       Height="8"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"
+                                       Fill="{Binding Foreground,
+                                                      ElementName=recieverBar}" />
+                            <TextBlock Margin="3,0,0,0"
+                                       HorizontalAlignment="Center"
+                                       TextWrapping="Wrap"
+                                       VerticalAlignment="Center">
+                                <TextBlock.Text>
+                                    <MultiBinding StringFormat="Filled space={0} ({1}) bytes">
+                                        <Binding Path="FilledSpaceRecieverBuffer" />
+                                        <Binding Path="TotalRecieverWindowSize" />
+                                    </MultiBinding>
+                                </TextBlock.Text>
+                            </TextBlock>
+                        </StackPanel>
+                    </Grid>
+                    <TextBlock HorizontalAlignment="Center"
+                               VerticalAlignment="Center"
+                               Foreground="Gray"
+                               Text="Selected a package to analyze">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Visibility" Value="Hidden" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding SelectedPackage, Mode=TwoWay}" Value="{x:Null}">
+                                        <Setter Property="Visibility" Value="Visible" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                </Grid>
+            </GroupBox>
+            <Border  Grid.Row="2"
+                     Height="40">
+            <TextBlock
+                       Margin="0,2,0,0"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"
+                       FontSize="14"
+                       FontWeight="Bold"
+                       TextWrapping="Wrap">
+                <TextBlock.Style>
+                    <Style TargetType="TextBlock">
+                        <Setter Property="Text" Value="The control flow doesn't find any problem on the selected package." />
+                        <Setter Property="Visibility" Value="Visible" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding SelectedPackage.WindowSize}" Value="0">
+                                <Setter Property="Text" Value="The application layer could not read as fast as the sender send the data, by so the source package machine couldn't recieve any package until the window size is equal to 0." />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding SelectedPackage, Mode=TwoWay}" Value="{x:Null}">
+                                <Setter Property="Visibility" Value="Hidden" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
+                
+            </Border>
+        </Grid>
+        <TextBlock HorizontalAlignment="Center"
+                   VerticalAlignment="Center"
+                   FontSize="24"
+                   Foreground="Gray"
+                   Text="The selected package doesn't belong to an complete connection.">
+            <TextBlock.Style>
+                <Style TargetType="TextBlock">
+                    <Setter Property="Visibility" Value="Hidden" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding ConnectionPackages.Count}" Value="0">
+                            <Setter Property="Visibility" Value="Visible" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </TextBlock.Style>
+        </TextBlock>
     </Grid>
 </Window>

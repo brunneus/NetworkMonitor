@@ -99,6 +99,21 @@ namespace NetworkMonitor.Engine
             }
         }
 
+        private bool _isADuplicatedPackage;
+        public bool IsADuplicatedPackage
+        {
+            get
+            {
+                return _isADuplicatedPackage;
+            }
+
+            set
+            {
+                _isADuplicatedPackage = value;
+                RaisePropertyChanged("IsADuplicatedPackage");
+            }
+        }
+
         public TCPPackage(IpPacket ipPacket) : base(ipPacket)
         {
             if (ipPacket.Protocol != IPProtocolType.TCP)

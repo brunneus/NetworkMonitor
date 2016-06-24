@@ -1,13 +1,14 @@
 ﻿using PacketDotNet;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace NetworkMonitor.Engine
 {
-    public class Package
+    public class Package : INotifyPropertyChanged
     {
         private readonly string _sourceAdress;
         public string SourceAdress
@@ -37,6 +38,9 @@ namespace NetworkMonitor.Engine
         }
 
         private readonly IPProtocolType _protocol;
+
+        public event PropertyChangedEventHandler PropertyChanged = delegate { };
+
         public IPProtocolType Protocol
         {
             get
@@ -54,6 +58,11 @@ namespace NetworkMonitor.Engine
             _destinationAddress = ipPacket.DestinationAddress.ToString();
             _nextHeader = ipPacket.NextHeader.ToString();
             _protocol = ipPacket.Protocol;
+        }
+
+        protected void RaisePropertyChanged(string propertyName)
+        {
+            PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

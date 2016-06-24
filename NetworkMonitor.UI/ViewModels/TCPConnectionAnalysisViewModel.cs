@@ -14,6 +14,7 @@ namespace NetworkMonitor.UI.ViewModels
 
         public TCPConnectionAnalysisViewModel(IEnumerable<TCPPackage> tcpPackages, TCPPackage selectedPackage)
         {
+            _connectionPackage = new List<TCPPackage>();
             var packages = tcpPackages.Where(p => p.BelongToSameConnectionOf(selectedPackage)).ToList();
 
             var sincronizePackage = packages.FirstOrDefault(tp => tp.Syn);
@@ -27,23 +28,28 @@ namespace NetworkMonitor.UI.ViewModels
             var firstPackageIndex = packages.IndexOf(sincronizePackage);
             var lastPackageIndex = packages.IndexOf(finishPackage);
 
-            ConnectionPackages = packages.GetRange(firstPackageIndex, (lastPackageIndex - firstPackageIndex) + 1);
+            _connectionPackage = packages.GetRange(firstPackageIndex, (lastPackageIndex - firstPackageIndex) + 1);
+            _sourceAdress = selectedPackage.SourceAdress;
 
             TotalSenderWindowSize = ConnectionPackages.Where(p => p.SourceAdress == selectedPackage.SourceAdress).Max(a => a.WindowSize);
             TotalRecieverWindowSize = ConnectionPackages.Where(p => p.SourceAdress == selectedPackage.DestinationAddress).Max(a => a.WindowSize);
-
-            _sourceAdress = selectedPackage.SourceAdress;
+            FindDuplicatedPackages();
         }
-
-        public string TestMessage { get; set; }
-
-        public List<TCPPackage> ConnectionPackages { get; set; }
         
         public int TotalRecieverWindowSize { get; set; }
 
         public int TotalSenderWindowSize { get; set; }
 
         public event PropertyChangedEventHandler PropertyChanged = delegate { };
+
+        private List<TCPPackage> _connectionPackage;
+        public IEnumerable<TCPPackage> ConnectionPackages
+        {
+            get
+            {
+                return _connectionPackage;
+            }
+        }
 
         private TCPPackage _selectedPackage;
         public TCPPackage SelectedPackage
@@ -59,37 +65,36 @@ namespace NetworkMonitor.UI.ViewModels
                 UpdateWindowSize();
             }
         }
-        
-        private int _currentSenderWindowSize;
-        public int CurrentSenderWindowSize
+
+        private int _filledSpaceSenderBuffer;
+        public int FilledSpaceSenderBuffer
         {
             get
             {
-                return _currentSenderWindowSize;
+                return _filledSpaceSenderBuffer;
+            }
+            set
+            {
+                _filledSpaceSenderBuffer = value;
+                PropertyChanged(this, new PropertyChangedEventArgs("FilledSpaceSenderBuffer"));
+            }
+        }
+
+        private int _filledSpaceRecieverBuffer;
+        public int FilledSpaceRecieverBuffer
+        {
+            get
+            {
+                return _filledSpaceRecieverBuffer;
             }
 
             set
             {
-                _currentSenderWindowSize = value;
-                PropertyChanged(this, new PropertyChangedEventArgs("CurrentSenderWindowSize"));
+                _filledSpaceRecieverBuffer = value;
+                PropertyChanged(this, new PropertyChangedEventArgs("FilledSpaceRecieverBuffer"));
             }
         }
 
-        private int _currentRecieverWindowSize;
-        public int CurrentRecieverWindowSize
-        {
-            get
-            {
-                return _currentRecieverWindowSize;
-            }
-
-            set
-            {
-                _currentRecieverWindowSize = value;
-                PropertyChanged(this, new PropertyChangedEventArgs("CurrentRecieverWindowSize"));
-            }
-        }
-        
         private ePackageFlow _selectedPackageFlow;
         public ePackageFlow SelectedPackageFlow
         {
@@ -105,18 +110,39 @@ namespace NetworkMonitor.UI.ViewModels
             }
         }
 
+        public bool HasAnyDuplicatedPackage
+        {
+            get
+            {
+                return _connectionPackage.Any(p => p.IsADuplicatedPackage);
+            }
+        }
+
         private void UpdateWindowSize()
         {
             if (_selectedPackage.SourceAdress == _sourceAdress)
             {
-                this.SelectedPackageFlow = ePackageFlow.SenderToReciever;
-                var index = ConnectionPackages.IndexOf(_selectedPackage);
-                CurrentSenderWindowSize = _selectedPackage.WindowSize;
+                SelectedPackageFlow = ePackageFlow.SenderToReciever;
+                FilledSpaceSenderBuffer = TotalSenderWindowSize - _selectedPackage.WindowSize;
             }
             else
             {
-                this.SelectedPackageFlow = ePackageFlow.RecieverToSender;
-                CurrentRecieverWindowSize = _selectedPackage.WindowSize;
+                SelectedPackageFlow = ePackageFlow.RecieverToSender;
+                FilledSpaceRecieverBuffer = TotalRecieverWindowSize - _selectedPackage.WindowSize;
+            }
+        }
+
+        private void FindDuplicatedPackages()
+        {
+            foreach (var package in _connectionPackage)
+            {
+                package.IsADuplicatedPackage = false;
+                if (_connectionPackage
+                    .Any(p => 
+                            p != package &&
+                            p.SequenceNumber == package.SequenceNumber &&
+                            p.AcknowledgementNumber == package.AcknowledgementNumber))
+                    package.IsADuplicatedPackage = true;
             }
         }
     }

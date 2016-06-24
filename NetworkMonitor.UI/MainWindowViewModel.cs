@@ -73,6 +73,30 @@ namespace NetworkMonitor.UI
             }
         }
 
+        private RelayCommand _showTCPPackageAnalysisCommand;
+        public RelayCommand ShowTCPPackageAnalysisCommand
+        {
+            get
+            {
+                return _showTCPPackageAnalysisCommand ?? (_showTCPPackageAnalysisCommand = new RelayCommand(ShowTCPPackageAnalysis));
+            }
+        }
+
+        private RelayCommand _clearCapturedPackagesCommand;
+        public RelayCommand ClearCapturedPackagesCommand
+        {
+            get
+            {
+                if (_clearCapturedPackagesCommand == null)
+                    _clearCapturedPackagesCommand = new RelayCommand(() =>
+                    {
+                        _originalPackages.Clear();
+                        this.FiltredGeneratedPackages.Clear();
+                    });
+
+                return _clearCapturedPackagesCommand;
+            }
+        }
 
         private bool _showOnlyTCPPackages;
         public bool ShowOnlyTCPPackages
@@ -103,18 +127,21 @@ namespace NetworkMonitor.UI
             }
         }
 
-        public Package SelectedPackage { get; set; }
-
-        public ObservableCollection<Package> FiltredGeneratedPackages { get; set; }
-
-        private RelayCommand _showTCPPackageAnalysisCommand;
-        public RelayCommand ShowTCPPackageAnalysisCommand
+        private Package _selectedPackage;
+        public Package SelectedPackage
         {
             get
             {
-                return _showTCPPackageAnalysisCommand ?? (_showTCPPackageAnalysisCommand = new RelayCommand(ShowTCPPackageAnalysis));
+                return _selectedPackage;
+            }
+            set
+            {
+                _selectedPackage = value;
+                PropertyChanged(this, new PropertyChangedEventArgs("SelectedPackage"));
             }
         }
+
+        public ObservableCollection<Package> FiltredGeneratedPackages { get; set; }
 
         public event PropertyChangedEventHandler PropertyChanged = delegate { };
 
